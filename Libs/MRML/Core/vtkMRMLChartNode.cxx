@@ -416,6 +416,26 @@ const char *vtkMRMLChartNode::GetProperty(const char *name,
 }
 
 //----------------------------------------------------------------------------
+void vtkMRMLChartNode::GetProperties(const char *name,
+                                     vtkStringArray *properties,
+                                     vtkStringArray *values)
+{
+  ChartPropertyMap::iterator it = this->Properties->find(name);
+
+  if (it != this->Properties->end())
+    {
+    ArrayPropertyMap::iterator ait;
+    for(ait = (*it).second.begin(); ait != (*it).second.end(); ++ait)
+      {
+        properties->InsertNextValue((*ait).first.c_str());
+        values->InsertNextValue((*ait).second.c_str());
+
+      }
+    }
+}
+
+
+//----------------------------------------------------------------------------
 void vtkMRMLChartNode::ClearProperty(const char *name,
                                      const char *property)
 {

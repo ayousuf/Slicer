@@ -105,6 +105,7 @@ set(MRMLCore_SRCS
   vtkMRMLAbstractViewNode.cxx
   vtkMRMLCameraNode.cxx
   vtkMRMLChartNode.cxx
+  vtkMRMLChartStorageNode.cxx
   vtkMRMLChartViewNode.cxx
   vtkMRMLClipModelsNode.cxx
   vtkMRMLColorNode.cxx

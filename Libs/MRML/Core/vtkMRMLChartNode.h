@@ -143,6 +143,10 @@ class VTK_MRML_EXPORT vtkMRMLChartNode : public vtkMRMLNode
   const char* GetProperty(const char *arrname, const char *property);
 
   ///
+  /// Gets all the properties and their values for a given array
+  void GetProperties(const char *name, vtkStringArray* properties, vtkStringArray* values);
+
+  ///
   /// Remove a property for an array
   void ClearProperty(const char *arrname, const char *property);
 
