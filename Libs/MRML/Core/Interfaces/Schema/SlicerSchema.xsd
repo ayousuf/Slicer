@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<!-- Properties: This is referenced in chart and array properties -->
+<xs:element name="properties">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="name" type="xs:string" use="required"/>
+                    <xs:attribute name="value" type="xs:string" use="required"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+<!-- Main Chart -->
+<xs:element name="chart">
+	<xs:complexType>
+		<xs:sequence>
+
+            <!-- Validate the chart Name-->
+            <xs:element name="name" type="xs:string"/>
+
+            <!-- Chart Properties -->
+            <xs:element ref = "properties"/>
+
+            <!-- Arrays in the chart -->
+            <xs:element name="arrays">
+                <xs:complexType>
+                    <xs:sequence>
+
+                        <!-- Arrays - There can be more than one -->
+                        <xs:element name="array" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+
+                                    <!-- Array Properties -->
+                                    <xs:element ref = "properties"/>
+
+                                    <!-- Data in the Array -->
+                                    <xs:element name="data">
+                                        <xs:complexType>
+                                            <xs:sequence>
+
+                                                <!-- Rows in the data. There can be more than one -->
+                                                <xs:element name="row" minOccurs="1" maxOccurs="unbounded">
+                                                    <xs:complexType>
+                                                        <xs:sequence>
+
+                                                            <!-- Column1 can contain floats or dates (for Bar Charts) -->
+                                                            <xs:element name="column1">
+                                                                <xs:simpleType>
+                                                                    <xs:union memberTypes="xs:date xs:float" />
+                                                                </xs:simpleType>
+                                                            </xs:element>
+                                                            <!-- Column2 and Column3 conatins only floats -->
+                                                            <xs:element name="column2" type="xs:float"/>
+                                                            <xs:element name="column3" type="xs:float"/>
+                                                        </xs:sequence>
+                                                    </xs:complexType>
+                                                </xs:element>
+                                            </xs:sequence>
+                                        </xs:complexType>
+                                    </xs:element>
+
+                                    <!-- Values from the lookupTable if one exists -->
+                                    <xs:element name="lookuptable" minOccurs="0" maxOccurs="1">
+                                        <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="set" minOccurs="1" maxOccurs="unbounded">
+                                                    <xs:complexType>
+                                                        <xs:sequence>
+                                                            <xs:element name="color" type="xs:string"/>
+                                                            <xs:element name="value" type="xs:float"/>
+                                                            <xs:element name="label" type="xs:string"/>
+                                                        </xs:sequence>
+                                                    </xs:complexType>
+                                                </xs:element>
+                                            </xs:sequence>
+
+                                            <!-- Attribute for lookuptable Name which is required -->
+                                            <xs:attribute name="name" use="required"/>
+                                        </xs:complexType>
+                                    </xs:element>
+
+                                </xs:sequence>
+
+                                <!-- Attribute for Array Name which is required -->
+                                <xs:attribute name="name" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+	</xs:complexType>
+</xs:element>
+</xs:schema>

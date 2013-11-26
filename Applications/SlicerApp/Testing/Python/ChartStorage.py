@@ -36,7 +36,7 @@ class ChartStorage:
     #
   def runTest(self):
     tester = ChartStorageTest()
-    tester.runTest()
+    tester.runTest(False)
 
 #
 # qChartingWidget
@@ -74,6 +74,11 @@ class ChartStorageWidget:
     self.reloadAndTestButton.toolTip = "Reload this module and then run the self tests."
     self.layout.addWidget(self.reloadAndTestButton)
     self.reloadAndTestButton.connect('clicked()', self.onReloadAndTest)
+
+    ### QCheckBox
+    self.keepFolderCheckBox = qt.QCheckBox("Keep Temporary Files")
+    # self.keepFolderCheckBox.tooltip = "Makes sure that the temporary XML output directory is not deleted."
+    self.layout.addWidget(self.keepFolderCheckBox)
 
     # Collapsible button
     dummyCollapsibleButton = ctk.ctkCollapsibleButton()
@@ -139,9 +144,11 @@ class ChartStorageWidget:
 
   def onReloadAndTest(self,moduleName="ChartStorage"):
     self.onReload()
+    # print (self.keepFolderCheckBox.isChecked())
+    checkBoxStatus = self.keepFolderCheckBox.isChecked()
     evalString = 'globals()["%s"].%sTest()' % (moduleName, moduleName)
     tester = eval(evalString)
-    tester.runTest()
+    tester.runTest(checkBoxStatus)
 
 #
 # ChartingLogic
@@ -198,9 +205,10 @@ class ChartStorageTest(unittest.TestCase):
     """
     slicer.mrmlScene.Clear(0)
 
-  def runTest(self):
+  def runTest(self, checkBoxStatus):
     """Run as few or as many tests as needed here.
     """
+    self.checkBoxValue = checkBoxStatus
     self.setUp()
     self.test_ChartStorage1()
 
@@ -467,15 +475,30 @@ class ChartStorageTest(unittest.TestCase):
 	# Create a chart Storage Node
     csn = slicer.mrmlScene.AddNode(slicer.vtkMRMLChartStorageNode())
     
-    # Write the Chart Nodes
-    nodeNames = getNodes('vtkMRMLChartNode*')
+    # Get the chart Nodes to print
+    nodeNames = slicer.util.getNodes('vtkMRMLChartNode*')
     keys = nodeNames.keys()
+
+    # Find the temporary Directory
+    import tempfile
+    temporaryOutputDirectory = tempfile.gettempdir()
+    temporaryOutputDirectory = temporaryOutputDirectory + '\\'
+    print("Temporary output Directory = %s" % (temporaryOutputDirectory))
+
+    # Print the charts
     for i in range(keys.__len__()):
-      fileName = "C:\\Test\\xmlSchemaTest_%s.xsd" % (keys.__getitem__(i))
+      fileName = "%sxmlSchemaTest_%s.xml" % (temporaryOutputDirectory, keys.__getitem__(i))
       csn.SetFileName(fileName)
-      csn.WriteChartToXML(getNode(keys.__getitem__(i)))
-      self.delayDisplay(" Printing %s" % (keys.__getitem__(i)))
+      csn.WriteChartToXML(slicer.util.getNode(keys.__getitem__(i)))
+      self.delayDisplay("Printing %s" % (keys.__getitem__(i)))
       
-    #
+    # Delete the charts from the temporary directory unless asked to save
+    if not self.checkBoxValue:
+      for j in range(keys.__len__()):
+        fileName = "%sxmlSchemaTest_%s.xml" % (temporaryOutputDirectory, keys.__getitem__(j))
+        os.remove(fileName)
+        self.delayDisplay("Deleting %s" % (keys.__getitem__(j)))
+
+    # End of ChartStorage Test
     self.delayDisplay('Test passed!')
     
